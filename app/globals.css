@@ -1,26 +1,128 @@
+/* globals.css - Corrected for Tailwind CSS v4, without using @theme for color definitions */
+
+/*
+  1. Tailwind CSS v4 Import:
+  This is the only line needed to include Tailwind's core styles in v4.
+  Remove any @tailwind base, components, utilities directives if they are still present.
+*/
 @import "tailwindcss";
 
+/*
+  2. Custom Variant for Dark Mode:
+  This correctly sets up your `dark:` prefix to be activated
+  when `body.theme-dark` (or any child) is present.
+*/
+@custom-variant dark (&:where(body.theme-dark, body.theme-dark *));
+
+/*
+  3. Define your CSS variables for light and dark modes at the :root level.
+  This is how you define your theme if @theme is not used for colors.
+  - Light mode defaults are directly on :root.
+  - Dark mode overrides are within the `body.theme-dark` selector.
+*/
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Default (Light) Theme Colors - adjusted for logical light mode */
+  --color-bg-base: #F7FAFC; /* A genuinely light background */
+  --color-text-base: #1F2937; /* A dark text color */
+
+  /* Define your custom color hex codes directly here */
+  --custom-color-darkTheme: #1A202C;
+  --custom-color-light-hover: #fcf4ff;
+  --custom-color-dark-hover: #2a004a;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+/*
+  Dark mode overrides for your base theme colors.
+  These will apply when the `body` has the `theme-dark` class.
+*/
+body.theme-dark {
+  --color-bg-base: var(--custom-color-darkTheme); /* Use your custom darkTheme for background */
+  --color-text-base: #FFFFFF;                     /* White text for dark mode */
+
+  /* If your hover colors also change based on dark mode, define overrides here */
+  /* Example: Light hover becomes dark hover in dark mode */
+  --custom-color-light-hover: var(--custom-color-dark-hover);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+
+/*
+  4. Global Styles:
+  Apply your global font family and bind body colors to the CSS variables.
+*/
+* {
+  font-family: Outfit; /* Ensure 'Outfit' is loaded via Next.js or @import url() */
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* Use the CSS variables for base background and text colors.
+     These will dynamically change based on the active theme. */
+  background-color: var(--color-bg-base);
+  color: var(--color-text-base);
+
+  /* @apply antialiased leading-8 overflow-x-hidden; */
+  /* These should be applied directly in your JSX for better control */
+}
+
+
+/*
+  5. @layer components:
+  This is fine.
+*/
+@layer components {
+    .grid-cols-auto {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+
+/*
+  6. @layer utilities:
+  This is where you *must* define your custom utilities and map them to
+  the CSS variables you defined above, since @theme is not being used for this.
+  This makes `bg-darkTheme`, `bg-light-hover`, etc., available as Tailwind classes.
+*/
+@layer utilities {
+  /* Custom background colors */
+  .bg-darkTheme {
+    background-color: var(--custom-color-darkTheme);
+  }
+  .bg-light-hover {
+    background-color: var(--custom-color-light-hover);
+  }
+  .bg-dark-hover {
+    background-color: var(--custom-color-dark-hover);
+  }
+
+  /* Custom text colors */
+  .text-darkTheme {
+    color: var(--custom-color-darkTheme);
+  }
+  .text-light-hover {
+    color: var(--custom-color-light-hover);
+  }
+  .text-dark-hover {
+    color: var(--custom-color-dark-hover);
+  }
+
+  /*
+    Hover utilities:
+    Tailwind v4 automatically generates these if the base utility is defined.
+    If they don't work automatically based on your @layer utilities,
+    you might need to define them explicitly like this if you want the custom
+    `hover:` utilities for these *specific* colors.
+    However, generally, if `bg-light-hover` exists, `hover:bg-light-hover` will also exist.
+  */
+  .hover\:bg-dark-hover:hover {
+    background-color: var(--custom-color-dark-hover);
+  }
+  .hover\:bg-light-hover:hover {
+    background-color: var(--custom-color-light-hover);
+  }
+  .hover\:text-light-hover:hover {
+    color: var(--custom-color-light-hover);
+  }
+  .hover\:text-dark-hover:hover {
+    color: var(--custom-color-dark-hover);
+  }
 }

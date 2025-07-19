@@ -1,7 +1,10 @@
+// jsconfig.json (ensure it has this section)
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"] // This line is crucial for the @/ alias
     }
-  }
+  },
+  // ... rest of your jsconfig.json
 }
